@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-vector-icons/material-design-icons": "^13.1.1",
     "expo": "~54.0.33",
     "expo-audio": "~1.1.1",
     "expo-dev-client": "~6.0.21",
@@ -17,6 +18,8 @@
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
     "react-native-audio-api": "^0.12.1",
+    "react-native-paper": "^5.15.2",
+    "react-native-safe-area-context": "^5.7.0",
     "react-native-web": "^0.21.0"
   },
   "private": true
