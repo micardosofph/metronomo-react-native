@@ -2,7 +2,10 @@ import { View, StyleSheet, Button, Text, ScrollView, TouchableOpacity, FlatList,
 import { useState, useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useAudioPlayer } from 'expo-audio';
-import Entypo from '@expo/vector-icons/Entypo';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useFonts } from 'expo-font';
+
+import AppText from './AppText';
 
 const metronomeSounds = [
   {
@@ -33,6 +36,17 @@ const metronomeSounds = [
 ];
 
 export default function App() {
+  // pra carregar as fontes
+  const [fontsLoaded] = useFonts({
+    'DefaultFont': require('./assets/fonts/Inter_18pt-Regular.ttf'),
+    'SemiBoldFont': require('./assets/fonts/Inter_18pt-SemiBold.ttf'),
+    'BoldFont': require('./assets/fonts/Inter_18pt-Bold.ttf'),
+    'LightFont': require('./assets/fonts/Inter_18pt-Light.ttf'),
+    'ExtraLightFont': require('./assets/fonts/Inter_18pt-ExtraLight.ttf'),
+  });
+
+  //return null la na frente linha 93
+
   const [bpm, setBpm] = useState(100);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -77,6 +91,10 @@ export default function App() {
     return () => clearInterval(timer);
   }, [isPlaying, bpm, playerHigh, playerLow]);
 
+  if (!fontsLoaded) { //aplicativo fica numa tela preta ate carregar (depois colocar loading)
+    return null;
+  }
+
   const renderSoundOption = ({ item }) => {
     const isSelected = item.name === selectedSound.name;
 
@@ -94,7 +112,7 @@ export default function App() {
           {/* Só renderiza a bolinha de dentro SE estiver selecionado */}
           {isSelected && <View style={styles.innerCircle} />}
         </View>
-        <Text style={styles.radioText}>{item.name}</Text>
+        <AppText style={styles.radioText}>{item.name}</AppText>
       </TouchableOpacity>
     );
   };
@@ -104,21 +122,28 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar style="auto" />
 
-      <Text>{bpm} BPM</Text>
+      <AppText>{bpm} BPM</AppText>
 
       <Button
         title={isPlaying ? "PARAR" : "INICIAR"}
         onPress={() => setIsPlaying(!isPlaying)}
-        color={isPlaying ? "red" : "green"}
+        color={isPlaying ? "#22D3EE" : "#8B5CF6"}
       ></Button>
+
+      {/* <TouchableOpacity
+      onPress={() => setIsPlaying(!isPlaying)}
+      backgroundColor={isPlaying ? "#22D3EE" : "#8B5CF6"}
+      style={backgroundColor=z{isPlaying ? "#22D3EE" : "#8B5CF6"}}>
+        <AppText>{isPlaying ? "PARAR" : "INICIAR"}</AppText>
+      </TouchableOpacity> */}
 
       <TouchableOpacity
         onPress={() => setSoundPickerVisible(true)}>
-        <Text>Mudar som</Text>
+        <FontAwesome name="gear" size={24} color="white" />
       </TouchableOpacity>
 
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={soundPickerVisible}
         onRequestClose={() => setSoundPickerVisible(false)}
@@ -126,7 +151,7 @@ export default function App() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
 
-            <Text style={styles.modalTitle}>Escolha o som</Text>
+            <AppText style={styles.modalTitle}>Escolha o som</AppText>
 
             <FlatList
               data={metronomeSounds}
@@ -134,44 +159,14 @@ export default function App() {
               keyExtractor={(item) => item.name}
             />
 
-            <Button title="Cancelar" onPress={() => setSoundPickerVisible(false)} color="gray" />
+            <TouchableOpacity
+              onPress={() => setSoundPickerVisible(false)}
+              style={styles.cancelButton}>
+              <AppText>Cancelar</AppText>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
-
-
-      <View>
-        <Text>Escolha o som</Text>
-
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {metronomeSounds.map((som) => (
-            <View key={som.name} style={styles.soundItem}>
-              <Text>{som.name}</Text>
-              <Button
-                title="Selecionar"
-                onPress={() => {
-                  setIsPlaying(false); // Para antes de trocar
-                  setSelectedSound(som);
-                }}
-              />
-              <TouchableOpacity>
-                <Text>Selecionar</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
-
-      <FlatList
-        data={metronomeSounds}
-        renderItem={({ item, index }) =>
-          <TouchableOpacity>
-            <View style={styles.outterCircle}></View>
-            <Text>{item.name}</Text>
-          </TouchableOpacity>
-        }
-        keyExtractor={item => item.name}
-      />
 
     </View>
 
@@ -183,8 +178,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    // backgroundColor: '#121212',
-    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    backgroundColor: '#121212',
+    // backgroundColor: '#ffffff',
     padding: 10,
     color: 'white',
   },
@@ -209,14 +205,41 @@ const styles = StyleSheet.create({
 
   },
 
-  radioButtonContainer: {
+  modalTitle: {
+    fontSize: 24
+  },
 
+  modalOverlay: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: '#00000050',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modalContent: {
+    backgroundColor: 'gray',
+    borderRadius: 12,
+    padding: 12,
+    width: '80%',
+  },
+
+  cancelButton: {
+    backgroundColor: 'gray',
+    padding: 10,
+    borderRadius: 12
+  },
+
+  radioButtonContainer: {
+    flexDirection: 'row',
+    gap: 12
   },
 
   outterCircle: {
-    height: 24,
-    width: 24,
-    borderRadius: 12,
+    height: 16,
+    width: 16,
+    borderRadius: 100,
     borderWidth: 2,
     borderColor: '#007BFF',
     alignItems: 'center',
@@ -224,9 +247,9 @@ const styles = StyleSheet.create({
   },
 
   innerCircle: {
-    height: 12,
-    width: 12,
-    borderRadius: 6,
+    height: 8,
+    width: 8,
+    borderRadius: 100,
     backgroundColor: '#007BFF',
   }
 });
