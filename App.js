@@ -1,4 +1,4 @@
-import { View, StyleSheet, Button, Text, ScrollView, TouchableOpacity, FlatList, Modal } from 'react-native';
+import { View, StyleSheet, Button, Text, ScrollView, TouchableOpacity, FlatList, Modal, Pressable } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useAudioPlayer } from 'expo-audio';
@@ -138,8 +138,9 @@ export default function App() {
       </TouchableOpacity> */}
 
       <TouchableOpacity
-        onPress={() => setSoundPickerVisible(true)}>
-        <FontAwesome name="gear" size={24} color="white" />
+        onPress={() => setSoundPickerVisible(true)}
+        style={styles.configContainer}>
+        <FontAwesome name="gear" size={32} color="white" />
       </TouchableOpacity>
 
       <Modal
@@ -148,8 +149,9 @@ export default function App() {
         visible={soundPickerVisible}
         onRequestClose={() => setSoundPickerVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <Pressable style={styles.modalOverlay}
+          onPress={() => setSoundPickerVisible(false)}>
+          <Pressable style={styles.modalContent}>
 
             <AppText style={styles.modalTitle}>Escolha o som</AppText>
 
@@ -157,6 +159,7 @@ export default function App() {
               data={metronomeSounds}
               renderItem={renderSoundOption}
               keyExtractor={(item) => item.name}
+              style={styles.metronomeSoundsList}
             />
 
             <TouchableOpacity
@@ -164,8 +167,8 @@ export default function App() {
               style={styles.cancelButton}>
               <AppText>Cancelar</AppText>
             </TouchableOpacity>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
 
     </View>
@@ -216,13 +219,30 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    cursor: 'default'
   },
 
   modalContent: {
-    backgroundColor: 'gray',
+    backgroundColor: '#5f5f5f',
     borderRadius: 12,
     padding: 12,
     width: '80%',
+    gap: 12,
+  },
+
+  metronomeSoundsList: {
+    gap: 100,
+  },
+
+  radioText: {
+    fontSize: 18,
+    marginBottom: 8
+  },
+
+  configContainer: {
+    position: 'absolute',
+    top: '6.5%',
+    right: '10%',
   },
 
   cancelButton: {
@@ -233,23 +253,24 @@ const styles = StyleSheet.create({
 
   radioButtonContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: 12
   },
 
   outterCircle: {
-    height: 16,
-    width: 16,
+    height: 20,
+    width: 20,
     borderRadius: 100,
     borderWidth: 2,
-    borderColor: '#007BFF',
+    borderColor: '#8B5CF6',
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   innerCircle: {
-    height: 8,
-    width: 8,
+    height: 10,
+    width: 10,
     borderRadius: 100,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#8B5CF6',
   }
 });
